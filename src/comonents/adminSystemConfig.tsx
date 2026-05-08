@@ -62,8 +62,8 @@ function AdminSystemConfigScreen() {
                 const { latitude, longitude } = location;
                 setFormData(prev => ({
                     ...prev,
-                    lat: parseFloat(latitude.toFixed(6)),
-                    lng: parseFloat(longitude.toFixed(6)),
+                    lat: latitude,
+                    lng: longitude,
                 }));
                 setUI({ gettingLocation: false, locationGotten: true });
                 toast.success('Location retrieved successfully.');
@@ -116,13 +116,17 @@ function AdminSystemConfigScreen() {
             toast.error('Radius must be between 50 m and 1000 m.');
             return;
         }
+          // Parse here — handles both manual input (string) and getLocation (number)
+    const parsedLat = parseFloat(String(lat));
+    const parsedLng = parseFloat(String(lng));
+    const parsedRadius = Number(radius);
 
         setUI({ saving: true });
         try {
             const res = await api.post('/admin/update-lga', {
-                radius: Number(radius),
-                latitude: lat,
-                longitude: lng,
+                radius:parsedRadius,
+                latitude: parsedLat,
+                longitude: parsedLng,
                 name,
             });
             if (res.data.success) {
